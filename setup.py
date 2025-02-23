@@ -52,9 +52,9 @@ if not VERSION:
 else:
     about['__version__'] = VERSION
 
-pyrender_reqs = ['pyrender>=0.1.23', 'trimesh>=2.37.6', 'shapely']
+pyrender_reqs   = ['pyrender>=0.1.23', 'trimesh>=2.37.6', 'shapely']
 matplotlib_reqs = ['matplotlib']
-open3d_reqs = ['open3d-python']
+open3d_reqs     = ['open3d-python']
 
 setup(name=NAME,
       version=about['__version__'],
