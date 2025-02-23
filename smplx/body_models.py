@@ -17,11 +17,8 @@
 from typing import Optional, Dict, Union
 import os
 import os.path as osp
-
 import pickle
-
 import numpy as np
-
 import torch
 import torch.nn as nn
 
@@ -47,7 +44,7 @@ TensorOutput = namedtuple('TensorOutput',
 
 class SMPL(nn.Module):
 
-    NUM_JOINTS = 23
+    NUM_JOINTS      = 23
     NUM_BODY_JOINTS = 23
     SHAPE_SPACE_DIM = 300
 
@@ -127,11 +124,11 @@ class SMPL(nn.Module):
         '''
 
         self.gender = gender
-        self.age = age
+        self.age    = age
 
         if data_struct is None:
             if osp.isdir(model_path):
-                model_fn = 'SMPL_{}.{ext}'.format(gender.upper(), ext='pkl')
+                model_fn  = 'SMPL_{}.{ext}'.format(gender.upper(), ext='pkl')
                 smpl_path = os.path.join(model_path, model_fn)
             else:
                 smpl_path = model_path
@@ -308,7 +305,7 @@ class SMPL(nn.Module):
         self,
         betas: Optional[Tensor] = None,
     ) -> SMPLOutput:
-        betas = betas if betas is not None else self.betas
+        betas    = betas if betas is not None else self.betas
         v_shaped = self.v_template + blend_shapes(betas, self.shapedirs)
         return SMPLOutput(vertices=v_shaped, betas=betas, v_shaped=v_shaped)
 
@@ -360,13 +357,13 @@ class SMPL(nn.Module):
         global_orient = (global_orient if global_orient is not None else
                          self.global_orient)
         body_pose = body_pose if body_pose is not None else self.body_pose
-        betas = betas if betas is not None else self.betas
+        betas     = betas if betas is not None else self.betas
 
         apply_trans = transl is not None or hasattr(self, 'transl')
         if transl is None and hasattr(self, 'transl'):
             transl = self.transl
 
-        full_pose = torch.cat([global_orient, body_pose], dim=1)
+        full_pose  = torch.cat([global_orient, body_pose], dim=1)
 
         batch_size = max(betas.shape[0], global_orient.shape[0],
                          body_pose.shape[0])
@@ -606,10 +603,10 @@ class SMPLH(SMPL):
             use_compressed=use_compressed, dtype=dtype, ext=ext, **kwargs)
 
         self.use_pca = use_pca
-        self.num_pca_comps = num_pca_comps
+        self.num_pca_comps  = num_pca_comps
         self.flat_hand_mean = flat_hand_mean
 
-        left_hand_components = data_struct.hands_componentsl[:num_pca_comps]
+        left_hand_components  = data_struct.hands_componentsl[:num_pca_comps]
         right_hand_components = data_struct.hands_componentsr[:num_pca_comps]
 
         self.np_left_hand_components = left_hand_components
@@ -1099,7 +1096,7 @@ class SMPLX(SMPLH):
         global_orient_mean = torch.zeros([3], dtype=self.dtype)
         body_pose_mean = torch.zeros([self.NUM_BODY_JOINTS * 3],
                                      dtype=self.dtype)
-        jaw_pose_mean = torch.zeros([3], dtype=self.dtype)
+        jaw_pose_mean  = torch.zeros([3], dtype=self.dtype)
         leye_pose_mean = torch.zeros([3], dtype=self.dtype)
         reye_pose_mean = torch.zeros([3], dtype=self.dtype)
 
@@ -1196,13 +1193,13 @@ class SMPLX(SMPLH):
         body_pose = body_pose if body_pose is not None else self.body_pose
         betas = betas if betas is not None else self.betas
 
-        left_hand_pose = (left_hand_pose if left_hand_pose is not None else
+        left_hand_pose  = (left_hand_pose if left_hand_pose is not None else
                           self.left_hand_pose)
         right_hand_pose = (right_hand_pose if right_hand_pose is not None else
                            self.right_hand_pose)
-        jaw_pose = jaw_pose if jaw_pose is not None else self.jaw_pose
-        leye_pose = leye_pose if leye_pose is not None else self.leye_pose
-        reye_pose = reye_pose if reye_pose is not None else self.reye_pose
+        jaw_pose   = jaw_pose if jaw_pose is not None else self.jaw_pose
+        leye_pose  = leye_pose if leye_pose is not None else self.leye_pose
+        reye_pose  = reye_pose if reye_pose is not None else self.reye_pose
         expression = expression if expression is not None else self.expression
 
         apply_trans = transl is not None or hasattr(self, 'transl')
@@ -1465,7 +1462,7 @@ class SMPLXLayer(SMPLX):
             )
             dyn_lmk_faces_idx, dyn_lmk_bary_coords = lmk_idx_and_bcoords
 
-            lmk_faces_idx = torch.cat([lmk_faces_idx, dyn_lmk_faces_idx], 1)
+            lmk_faces_idx   = torch.cat([lmk_faces_idx, dyn_lmk_faces_idx], 1)
             lmk_bary_coords = torch.cat(
                 [lmk_bary_coords.expand(batch_size, -1, -1),
                  dyn_lmk_bary_coords], 1)
@@ -1856,7 +1853,7 @@ class FLAME(SMPL):
             dtype: torch.dtype
                 The data type for the created variables
         '''
-        model_fn = f'FLAME_{gender.upper()}.{ext}'
+        model_fn   = f'FLAME_{gender.upper()}.{ext}'
         flame_path = os.path.join(model_path, model_fn)
         assert osp.exists(flame_path), 'Path {} does not exist!'.format(
             flame_path)
@@ -1927,7 +1924,7 @@ class FLAME(SMPL):
             print(f'WARNING: You are using a {self.name()} model, with only'
                   ' 10 shape and 10 expression coefficients.')
             expr_start_idx = 10
-            expr_end_idx = 20
+            expr_end_idx   = 20
             num_expression_coeffs = min(num_expression_coeffs, 10)
         else:
             expr_start_idx = self.SHAPE_SPACE_DIM
@@ -2066,7 +2063,7 @@ class FLAME(SMPL):
         # ones from the module
         global_orient = (global_orient if global_orient is not None else
                          self.global_orient)
-        jaw_pose = jaw_pose if jaw_pose is not None else self.jaw_pose
+        jaw_pose  = jaw_pose if jaw_pose is not None else self.jaw_pose
         neck_pose = neck_pose if neck_pose is not None else self.neck_pose
 
         leye_pose = leye_pose if leye_pose is not None else self.leye_pose
